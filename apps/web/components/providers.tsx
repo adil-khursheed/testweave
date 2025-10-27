@@ -2,7 +2,11 @@
 
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+
 import QueryProviders from "./query-providers";
+
 import { Toaster } from "@workspace/ui/components/sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
