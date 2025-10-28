@@ -3,6 +3,7 @@ import { CustomError } from "../../middlewares/error";
 import { verifyWebhook } from "@clerk/express/webhooks";
 import User from "../../models/userModel";
 import Organization from "../../models/organizationModel";
+import OrgMembership from "../../models/orgMembershipModel";
 
 export const clerkWebhooks = async (
   req: Request,
@@ -29,12 +30,11 @@ export const clerkWebhooks = async (
         updated_at,
         created_by,
         image_url,
-        pending_invitations_count,
         members_count,
       } = evt.data;
 
       const organization = await Organization.findOneAndUpdate(
-        { id },
+        { clerk_id: id },
         {
           $set: {
             admin_delete_enabled,
@@ -44,7 +44,6 @@ export const clerkWebhooks = async (
             max_allowed_memberships,
             members_count,
             name,
-            pending_invitations_count,
             slug,
             created_at,
             updated_at,
@@ -69,7 +68,7 @@ export const clerkWebhooks = async (
     // Delete Organization
     if (eventType === "organization.deleted") {
       const { id } = evt.data;
-      await Organization.findOneAndDelete({ id });
+      await Organization.findOneAndDelete({ clerk_id: id });
 
       res.status(200).json({
         success: true,
@@ -85,11 +84,61 @@ export const clerkWebhooks = async (
       });
     }
 
+    // Create or Update Organization Membership
     if (
       eventType === "organizationMembership.created" ||
       eventType === "organizationMembership.updated"
     ) {
-      console.log("Membership => ", evt.data);
+      const {
+        id,
+        organization,
+        public_user_data,
+        role,
+        permissions,
+        updated_at,
+        created_at,
+      } = evt.data;
+
+      const user = await User.findOne({ clerk_id: public_user_data.user_id });
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      const org = await Organization.findOne({ clerk_id: organization.id });
+      if (!org) {
+        return res.status(404).json({
+          success: false,
+          message: "Organization not found",
+        });
+      }
+
+      const orgMembership = await OrgMembership.findOneAndUpdate(
+        {
+          clerk_id: id,
+        },
+        {
+          $set: {
+            organization_id: org._id,
+            user_id: user._id,
+            permissions,
+            role,
+            created_at,
+            updated_at,
+          },
+        },
+        {
+          upsert: true,
+          new: true,
+        }
+      );
+
+      org.members_count = organization.members_count!;
+
+      await Promise.all([orgMembership.save(), org.save()]);
+
       res.status(201).json({
         success: true,
         message: "Membership created successfully",
@@ -105,22 +154,19 @@ export const clerkWebhooks = async (
         last_name,
         image_url,
         last_sign_in_at,
-        username,
         password_enabled,
         create_organization_enabled,
         create_organizations_limit,
-        organization_memberships,
         banned,
         created_at,
         updated_at,
       } = evt.data;
 
       const user = await User.findOneAndUpdate(
-        { id },
+        { clerk_id: id },
         {
           $set: {
             email_addresses,
-            username,
             first_name,
             last_name,
             image_url,
@@ -128,7 +174,6 @@ export const clerkWebhooks = async (
             password_enabled,
             create_organization_enabled,
             create_organizations_limit,
-            organization_memberships,
             banned,
             created_at,
             updated_at,
@@ -153,7 +198,7 @@ export const clerkWebhooks = async (
     // Delete User
     if (eventType === "user.deleted") {
       const { id } = evt.data;
-      await User.findOneAndDelete({ id });
+      await User.findOneAndDelete({ clerk_id: id });
 
       res.status(200).json({
         success: true,

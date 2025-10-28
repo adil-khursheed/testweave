@@ -1,27 +1,11 @@
-import { OrganizationMembershipJSON, UserJSON } from "@clerk/express";
 import mongoose, { Schema } from "mongoose";
-import { organizationSchema } from "./organizationModel";
+import { TUser } from "../types/users";
 
 const emailSchema = new Schema({
   email_address: {
     type: String,
     required: true,
   },
-  id: {
-    type: String,
-    required: true,
-  },
-  linked_to: [
-    {
-      id: {
-        type: String,
-      },
-      type: {
-        type: String,
-      },
-    },
-  ],
-  object: String,
   verification: {
     attempts: {
       type: String,
@@ -35,26 +19,10 @@ const emailSchema = new Schema({
   },
 });
 
-const organizationMembershipSchema = new Schema<OrganizationMembershipJSON>({
-  id: {
+const userSchema = new Schema<TUser>({
+  clerk_id: {
     type: String,
     required: true,
-  },
-  organization: organizationSchema,
-  role: {
-    type: String,
-    required: true,
-  },
-});
-
-const userSchema = new Schema<UserJSON>({
-  id: {
-    type: String,
-    required: true,
-  },
-  username: {
-    type: String,
-    default: null,
   },
   first_name: {
     type: String,
@@ -81,10 +49,12 @@ const userSchema = new Schema<UserJSON>({
   create_organizations_limit: {
     type: Number,
   },
-  organization_memberships: {
-    type: [organizationMembershipSchema],
-    default: null,
-  },
+  organizations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+    },
+  ],
   banned: {
     type: Boolean,
     default: false,
@@ -93,6 +63,6 @@ const userSchema = new Schema<UserJSON>({
   updated_at: Date,
 });
 
-const User = mongoose.model<UserJSON>("User", userSchema);
+const User = mongoose.model<TUser>("User", userSchema);
 
 export default User;

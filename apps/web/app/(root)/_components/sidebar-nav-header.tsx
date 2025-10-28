@@ -19,13 +19,16 @@ const SidebarNavHeader = () => {
     <SidebarMenu>
       <SidebarMenuItem>
         <OrganizationSwitcher
-          hidePersonal={false}
+          hidePersonal={true}
+          afterCreateOrganizationUrl={({ slug }) => `/${slug}/dashboard`}
+          afterSelectOrganizationUrl={({ slug }) => `/${slug}/dashboard`}
           appearance={{
             theme: resolvedTheme === "dark" ? dark : undefined,
             elements: {
+              rootBox: "w-full h-12",
               organizationSwitcherTrigger: cn(
                 "cursor-pointer",
-                open ? "" : "size-7 ml-[5px] overflow-hidden"
+                open ? "w-full justify-between" : "w-7 ml-[5px] overflow-hidden"
               ),
             },
           }}

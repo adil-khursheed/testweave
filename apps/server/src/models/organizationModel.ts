@@ -1,17 +1,25 @@
-import { OrganizationJSON } from "@clerk/express";
 import mongoose, { Schema } from "mongoose";
+import { TOrganization } from "../types/org";
 
-export const organizationSchema = new Schema<OrganizationJSON>({
-  id: {
+export const organizationSchema = new Schema<TOrganization>({
+  clerk_id: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  slug: {
+    type: String,
+    required: true,
+  },
+  created_by: {
     type: String,
     required: true,
   },
   admin_delete_enabled: {
     type: Boolean,
-    required: true,
-  },
-  created_by: {
-    type: String,
     required: true,
   },
   has_image: {
@@ -28,23 +36,11 @@ export const organizationSchema = new Schema<OrganizationJSON>({
     type: Number,
     default: 0,
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  pending_invitations_count: {
-    type: Number,
-    default: 0,
-  },
-  slug: {
-    type: String,
-    required: true,
-  },
   created_at: Date,
   updated_at: Date,
 });
 
-const Organization = mongoose.model<OrganizationJSON>(
+const Organization = mongoose.model<TOrganization>(
   "Organization",
   organizationSchema
 );
