@@ -1,12 +1,10 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { _env } from "../config/_env";
 
 let db: mongoose.Connection;
 
 const ConnectToDB = async () => {
-  const databaseUrl = process.env.TEST_BUDDY_DB_URL as string;
+  const databaseUrl = _env.DB_URL as string;
 
   try {
     await mongoose.connect(databaseUrl, {

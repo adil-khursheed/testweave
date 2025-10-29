@@ -1,4 +1,3 @@
-import { config } from "dotenv";
 import express, { NextFunction, Request, Response, urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -6,15 +5,13 @@ import expressWinston from "express-winston";
 import winston from "winston";
 import errorMiddleware from "./middlewares/error";
 import { clerkMiddleware } from "@clerk/express";
+import { _env } from "./config/_env";
 
 // Routes
 import webhookRoutes from "./routes/webhookRoutes";
 import userRoutes from "./routes/users";
 import organizationRoutes from "./routes/organizationRoutes";
-
-config({
-  path: "./.env",
-});
+import projectRoutes from "./routes/projectRoutes";
 
 const app = express();
 
@@ -41,7 +38,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 app.use(urlencoded({ extended: true }));
 
-const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3000"];
+const allowedOrigins = [_env.FRONTEND_URL];
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
@@ -71,6 +68,7 @@ app.get("/api", (req, res) => {
 app.use("/api/v1/webhooks", webhookRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/organizations", organizationRoutes);
+app.use("/api/v1/projects", projectRoutes);
 
 app.use(errorMiddleware);
 

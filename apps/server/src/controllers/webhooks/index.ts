@@ -76,14 +76,6 @@ export const clerkWebhooks = async (
       });
     }
 
-    if (eventType === "organizationInvitation.created") {
-      console.log("Invitation => ", evt.data);
-      res.status(201).json({
-        success: true,
-        message: "Invitation sent successfully",
-      });
-    }
-
     // Create or Update Organization Membership
     if (
       eventType === "organizationMembership.created" ||
@@ -101,18 +93,12 @@ export const clerkWebhooks = async (
 
       const user = await User.findOne({ clerk_id: public_user_data.user_id });
       if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
+        return next(new CustomError("User not found", 404));
       }
 
       const org = await Organization.findOne({ clerk_id: organization.id });
       if (!org) {
-        return res.status(404).json({
-          success: false,
-          message: "Organization not found",
-        });
+        return next(new CustomError("Organization not found", 404));
       }
 
       const orgMembership = await OrgMembership.findOneAndUpdate(

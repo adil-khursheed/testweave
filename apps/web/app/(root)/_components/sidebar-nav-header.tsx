@@ -25,7 +25,7 @@ const SidebarNavHeader = () => {
           appearance={{
             theme: resolvedTheme === "dark" ? dark : undefined,
             elements: {
-              rootBox: "w-full h-12",
+              rootBox: "w-full",
               organizationSwitcherTrigger: cn(
                 "cursor-pointer",
                 open ? "w-full justify-between" : "w-7 ml-[5px] overflow-hidden"
