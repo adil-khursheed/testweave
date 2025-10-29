@@ -22,6 +22,8 @@
     "express-winston": "^4.2.0",
     "mongoose": "^8.15.2",
     "nodemailer": "^7.0.3",
+    "openai": "^6.7.0",
+    "playwright": "^1.56.1",
     "winston": "^3.17.0",
     "zod": "^3.25.64"
   },
