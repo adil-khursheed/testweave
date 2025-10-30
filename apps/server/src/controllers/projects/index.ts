@@ -91,6 +91,11 @@ export const createProject = async (
       created_by: req.user?._id,
     });
 
+    if (!organization.default_project) {
+      organization.default_project = project.slug;
+      await organization.save();
+    }
+
     res.status(201).json({
       success: true,
       message: "Project created successfully",

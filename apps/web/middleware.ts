@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { getOrganization } from "./data/get-organization";
 
 const isPublicRoute = createRouteMatcher(["/", "/login(.*)", "/signup(.*)"]);
 
@@ -8,10 +9,27 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
   }
 
-  const { orgSlug, userId } = await auth();
+  const { orgSlug, userId, getToken } = await auth();
 
   if (userId && isPublicRoute(req)) {
-    return NextResponse.redirect(new URL(`/${orgSlug}/dashboard`, req.url));
+    const token = await getToken();
+
+    if (orgSlug) {
+      const org = await getOrganization(orgSlug, token);
+
+      if (org.organization.default_project) {
+        return NextResponse.redirect(
+          new URL(
+            `/${orgSlug}/${org.organization.default_project}/dashboard`,
+            req.url
+          )
+        );
+      } else {
+        return NextResponse.redirect(new URL("/project/create", req.url));
+      }
+    } else {
+      return NextResponse.redirect(new URL("/workspace", req.url));
+    }
   }
 
   return NextResponse.next();

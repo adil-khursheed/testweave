@@ -11,6 +11,7 @@ type TOrganization = {
   image_url: string;
   max_allowed_memberships: number;
   members_count: number;
+  default_project: string | null;
   created_at: Date;
   updated_at: Date;
 };

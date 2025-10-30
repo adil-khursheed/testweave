@@ -11,7 +11,7 @@ const Page = () => {
   return (
     <section className="w-full min-h-screen flex items-center justify-center">
       <CreateOrganization
-        afterCreateOrganizationUrl={({ slug }) => `/${slug}/dashboard`}
+        afterCreateOrganizationUrl={"/project/create"}
         appearance={{
           theme: resolvedTheme === "dark" ? dark : undefined,
         }}

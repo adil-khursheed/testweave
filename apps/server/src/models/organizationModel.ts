@@ -36,6 +36,10 @@ export const organizationSchema = new Schema<TOrganization>({
     type: Number,
     default: 0,
   },
+  default_project: {
+    type: String,
+    default: null,
+  },
   created_at: Date,
   updated_at: Date,
 });

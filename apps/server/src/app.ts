@@ -33,7 +33,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.originalUrl === "/api/v1/webhooks/clerk") {
     next();
   } else {
-    express.json();
+    express.json()(req, res, next);
   }
 });
 app.use(urlencoded({ extended: true }));

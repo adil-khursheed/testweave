@@ -3,12 +3,12 @@ import { LayoutGridIcon, SquareTerminalIcon } from "lucide-react";
 export const navMenuItems = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "dashboard",
     icon: LayoutGridIcon,
   },
   {
     title: "Create Tests",
-    url: "/create-tests",
+    url: "create-tests",
     icon: SquareTerminalIcon,
   },
 ];
